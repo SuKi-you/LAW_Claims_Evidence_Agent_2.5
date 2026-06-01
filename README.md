@@ -836,7 +836,54 @@ npm run dev
 
 ---
 
-## 八、安全说明
+## 八、公网部署到 Vercel
+
+### 8.1 部署步骤
+
+1. 将项目推送到 GitHub。
+2. 打开 [Vercel](https://vercel.com)。
+3. 点击 **Add New Project → Import Git Repository**。
+4. 选择当前 GitHub 仓库。
+5. Framework Preset 选择 **Vite**。
+6. Build Command 填：
+
+```
+npm run build
+```
+
+7. Output Directory 填：
+
+```
+dist
+```
+
+8. 在 Vercel Project Settings → **Environment Variables** 中添加：
+
+| 变量名 | 值 |
+|--------|-----|
+| `VITE_DIFY_BASE_URL` | `https://api.dify.ai/v1` |
+| `VITE_DIFY_INTENT_API_KEY` | 你的 Intent App API Key |
+| `VITE_DIFY_EVIDENCE_API_KEY` | 你的 Evidence App API Key |
+
+9. 点击 **Deploy**。
+10. 部署成功后，Vercel 会生成一个公网链接，例如：
+
+```
+https://项目名.vercel.app
+```
+
+11. 这个链接可以直接发给别人访问，不需要别人本地运行项目。
+12. 如果修改了环境变量，需要重新 **Redeploy**，旧部署不会自动应用新环境变量。
+
+### 8.2 重要提示
+
+当前方案为前端直连 Dify 的临时展示部署方式。VITE_ 环境变量会进入前端构建产物，不适合作为长期公开生产方案；长期公开部署建议改为服务端代理方案。
+
+此方案仅适用于作品集展示、面试 Demo 等短期场景。
+
+---
+
+## 九、安全说明
 
 请不要提交任何真实 API Key、token 或本地环境变量文件。
 

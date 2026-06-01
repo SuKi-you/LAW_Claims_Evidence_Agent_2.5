@@ -31,9 +31,9 @@ function difyProxyPlugin(): Plugin {
     configureServer(server) {
       const env = loadEnv("", path.resolve(process.cwd()), "")
 
-      const difyBaseUrl = env.DIFY_API_BASE_URL || "http://localhost/v1"
-      const intentApiKey = env.DIFY_INTENT_API_KEY
-      const evidenceApiKey = env.DIFY_EVIDENCE_API_KEY
+      const difyBaseUrl = env.VITE_DIFY_BASE_URL || "http://localhost/v1"
+      const intentApiKey = env.VITE_DIFY_INTENT_API_KEY
+      const evidenceApiKey = env.VITE_DIFY_EVIDENCE_API_KEY
 
       if (!intentApiKey || !evidenceApiKey) {
         console.warn("[dify-proxy] ⚠️  DIFY_API keys missing in .env")

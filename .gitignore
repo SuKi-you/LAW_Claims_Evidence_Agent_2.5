@@ -7,25 +7,45 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
+# Dependencies
+node_modules/
+
+# Build output
+dist/
 dist-ssr
-*.local
+build/
+.vite/
+
+# Environment files
 .env
 .env.*
 !.env.example
-.env.local
-build/
-.vite/
-.bolt
 
-# Editor directories and files
+# Editor
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Testing / Coverage
+coverage/
+playwright-report/
+test-results/
+
+# Eval raw results
+raw_results*.json
+eval/reports/**/raw/
+G0*.json
+smoke_report*.md
+smoke_error_report*.md
+targeted_smoke_report*.md
+
+# Misc
+.bolt
+*.local
