@@ -1,0 +1,25 @@
+export type ClaimType =
+  | "divorce"
+  | "child_custody"
+  | "child_support"
+  | "visitation"
+  | "property_division"
+  | "third_party_gift_return"
+  | "property_transfer"
+  | "domestic_violence_protection"
+  | "divorce_damages"
+  | "unknown"
+
+export function classifyClaimName(name: string): ClaimType {
+  const value = name || ""
+  if (/损害赔偿|精神损害/.test(value)) return "divorce_damages"
+  if (/财产转移|隐匿|转移存款|隐藏财产/.test(value)) return "property_transfer"
+  if (/第三者|小三|赠与|追回|返还|转账/.test(value)) return "third_party_gift_return"
+  if (/保护令|人身安全|家暴|家庭暴力/.test(value)) return "domestic_violence_protection"
+  if (/财产分割|夫妻共同财产|房产分割|共同房产/.test(value)) return "property_division"
+  if (/探望|探视/.test(value)) return "visitation"
+  if (/抚养费/.test(value)) return "child_support"
+  if (/子女抚养权|抚养权|孩子抚养|孩子归我/.test(value)) return "child_custody"
+  if (/离婚|解除婚姻/.test(value)) return "divorce"
+  return "unknown"
+}

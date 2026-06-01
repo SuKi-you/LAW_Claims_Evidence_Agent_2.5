@@ -1,0 +1,961 @@
+app:
+  description: Agent 2.5 lightweight evidence suggestion workflow. Confirmed claims
+    are the only evidence scope.
+  icon: clipboard
+  icon_background: '#E0F2FE'
+  icon_type: emoji
+  mode: advanced-chat
+  name: legal-claim-evidence-agent-evidence-2-5-light-optimized-v5
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/deepseek:0.0.17
+    version: null
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/tongyi:0.1.48
+    version: null
+kind: app
+version: 0.6.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 20
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: evidence_light_llm-source-answer_2_5-target
+      source: evidence_light_llm
+      sourceHandle: source
+      target: answer_2_5
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1780210496273-source-evidence_light_llm-target
+      source: '1780210496273'
+      sourceHandle: source
+      target: evidence_light_llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: start_2_5-source-17802274099080-target
+      source: start_2_5
+      sourceHandle: source
+      target: '17802274099080'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: knowledge-retrieval
+      id: 17802274099080-source-1780210496273-target
+      source: '17802274099080'
+      sourceHandle: source
+      target: '1780210496273'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: Start - 用户输入与确认诉求
+        type: start
+        variables:
+        - default: ''
+          hint: 用户确认的诉求，建议传 JSON 数组或用逗号分隔，例如：["离婚","追回第三者赠与"]
+          label: confirmed_claims
+          max_length: 1024
+          options: []
+          placeholder: '["离婚"]'
+          required: true
+          type: paragraph
+          variable: confirmed_claims
+      height: 108
+      id: start_2_5
+      position:
+        x: -413
+        y: -34
+      positionAbsolute:
+        x: -413
+        y: -34
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: Agent 2.5 轻量证据建议。只基于 confirmed_claims 输出 C 端证据清单。
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: deepseek-v4-pro
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: system_prompt_2_5
+          role: system
+          text: '你是 Agent 2.5 的婚姻家事证据清单轻量生成模块。
+
+
+            你的任务只有一个：根据用户原始案情 query 和用户已经确认的 confirmed_claims，生成简洁、保守、可执行的证据建议。
+
+
+            核心规则：
+
+            1. confirmed_claims 是唯一诉求入口。
+
+            2. 你不得根据原始案情重新识别或扩展未确认诉求。
+
+            3. 你不得输出 proof_path、legal_elements、facts_to_prove、matched_rules、factors、claim_cards、evidence_candidates。
+
+            4. 你不得输出正式法律意见、胜诉承诺、起诉状或大段法律分析。
+
+            5. 输出必须严格符合结构化 JSON schema。
+
+            6. 你必须优先参考【知识库召回内容】中的建议证据、证据目的和适用诉求。
+
+            7. 知识库召回内容只能作为 confirmed_claims 范围内的证据规则参考，不得扩大诉求范围。
+
+            8. 如果召回结果中同时存在普通规则和更具体规则，应优先使用与用户事实直接对应的具体规则。
+
+            9. 例如：涉及隐藏、转移、变卖、毁损、挥霍夫妻共同财产时，应优先参考 CIVIL_CODE_1092 / CIVIL_CODE_1066，而不是普通财产分割规则
+            CIVIL_CODE_1087。
+
+            10. 例如：涉及第三者赠与、小三转账、追回时，应优先参考 MARRIAGE_EXPLAIN_II_7。
+
+            11. 例如：涉及家暴、威胁、保护令时，应优先参考保护令、家庭暴力认定和证据形式相关规则。
+
+
+            硬兜底规则（最高优先级）：
+
+            只要 confirmed_claims 非空，core_evidence 绝对不得为空数组。
+
+            即使知识库召回内容为空或与 confirmed_claims 明显无关，也必须根据 confirmed_claims 中的诉求类型从固定证据模板中输出保守基础证据。
+
+            不得以"信息不足""知识库未命中""无法生成"等理由返回空 core_evidence。
+
+
+            固定证据模板（根据 confirmed_claims 中的诉求名称精确匹配，作为兜底和参考）：
+
+            【离婚】
+            core_evidence:
+            - 双方身份证 / 户口簿（证明当事人身份信息）
+            - 结婚证或婚姻登记档案（证明婚姻关系存续）
+            - 感情破裂相关材料（分居证明/聊天记录/证人证言/离婚协议书如有）
+            auxiliary_evidence:
+            - 婚前感情基础材料
+            - 婚后感情状况材料
+
+            【子女抚养权】
+            core_evidence:
+            - 子女出生医学证明
+            - 子女户口簿
+            - 子女当前生活/就学证明（证明实际抚养状况）
+            auxiliary_evidence:
+            - 收入证明/工作证明
+            - 居住条件证明
+            - 对方不利于抚养的证据（如存在）
+
+            【抚养费】
+            core_evidence:
+            - 子女出生医学证明
+            - 对方收入证明/银行流水
+            - 子女日常生活开支凭证
+            auxiliary_evidence:
+            - 教育费用票据
+            - 医疗费用票据
+
+            【探望权】
+            core_evidence:
+            - 子女出生医学证明
+            - 探望方案建议/双方关于探望的沟通记录
+            auxiliary_evidence:
+            - 对方阻挠探望的证据（如存在）
+
+            【财产分割】
+            core_evidence:
+            - 不动产权属证书/购房合同
+            - 车辆登记证书
+            - 银行存款流水/理财账户证明
+            - 债务凭证（贷款合同/借条）
+            auxiliary_evidence:
+            - 婚后收入证明
+            - 婚前财产证明（如涉及）
+
+            【家暴 / 人身安全保护】
+            core_evidence:
+            - 伤情照片/视频（如有）
+            - 医院就诊记录/伤情鉴定报告（如有）
+            - 报警记录/出警回执（如有）
+            - 威胁/恐吓聊天记录或录音（如有）
+            auxiliary_evidence:
+            - 证人证言（邻居/亲友/同事）
+            - 妇联/社区/单位调解记录
+
+            【离婚损害赔偿】
+            core_evidence:
+            - 出轨/婚外情证据（聊天记录/照片/视频/录音）
+            - 家暴证据（伤情照片/报警记录/验伤报告）
+            - 医疗费票据（如因家暴受伤）
+            auxiliary_evidence:
+            - 精神损害证明材料
+            - 证人证言
+
+            【追回第三者赠与】
+            core_evidence:
+            - 银行转账记录/微信支付凭证/支付宝转账凭证
+            - 转账金额及时间明细
+            - 证明转账对象为婚外第三者的证据（聊天记录/照片/录音/消费记录等）
+            - 证明赠与款项来源于夫妻共同财产的证据
+            auxiliary_evidence:
+            - 第三者身份线索/信息
+
+            【财产转移】
+            core_evidence:
+            - 银行账户流水（重点标注异常转账/大额取现/频繁转账）
+            - 不动产登记信息查询结果（证明房产是否被转移/过户）
+            - 车辆过户记录
+            - 大额转账时间线梳理
+            auxiliary_evidence:
+            - 财产转移线索/时间线整理
+            - 异常交易对方账户信息
+
+            注意：财产转移 与 追回第三者赠与 的证据模板是分开的。
+            如果 confirmed_claims 仅包含"财产转移"而不包含"追回第三者赠与"，则不得输出第三者身份线索、第三者信息、聊天记录中涉及第三者的内容。
+            只有在 confirmed_claims 同时包含"追回第三者赠与"时，才允许输出第三者相关证据。
+
+
+            证据范围规则：
+
+
+            A. 如果 confirmed_claims 只有"离婚"：
+
+            只输出基础离婚材料，例如：
+
+            - 身份证件
+
+            - 结婚证或婚姻登记信息
+
+            - 户口簿
+
+            - 夫妻感情破裂相关材料
+
+            - 分居、沟通记录等如有则补充
+
+            不得输出微信转账截图、银行流水、转账记录、第三者身份线索、人身安全保护令申请材料、伤情照片、报警记录、损害赔偿金额证明、子女抚养材料、财产分割清单。
+
+
+            B. 如果 confirmed_claims 包含"追回第三者赠与"：
+
+            才允许输出：
+
+            - 微信转账截图
+
+            - 银行流水
+
+            - 转账记录
+
+            - 第三者身份线索
+
+            - 证明赠与款项来源于夫妻共同财产的证据
+
+
+            C. 如果 confirmed_claims 包含"财产转移"但不包含"追回第三者赠与"：
+
+            只允许输出：
+
+            - 银行账户流水（异常转账/大额取现）
+
+            - 不动产登记信息查询结果
+
+            - 车辆过户记录
+
+            - 大额转账时间线
+
+            不得输出第三者身份线索、第三者信息、聊天记录中涉及第三者的内容。
+
+
+            D. 如果 confirmed_claims 同时包含"财产转移"和"追回第三者赠与"：
+
+            允许同时输出 B 和 C 中的证据，两类证据合并展示。
+
+
+            E. 如果 confirmed_claims 包含"家暴 / 人身安全保护"：
+
+            才允许输出：
+
+            - 威胁聊天记录
+
+            - 伤情照片，如有
+
+            - 就医记录，如有
+
+            - 证人线索
+
+            - 人身安全保护令申请材料
+
+            - 报警记录或接警回执，如有
+
+            如果 query 明确说"没有报警/未报警/没报警"，报警记录只能写成"如有则补充"或"后续可考虑报警留痕"，不得暗示已经存在报警记录。
+
+
+            F. 如果 confirmed_claims 包含子女类诉求：
+
+            才允许输出孩子出生证明、户口信息、实际照顾材料、收入证明、教育医疗支出、探望安排等子女相关证据。
+
+
+            G. 如果 confirmed_claims 包含"财产分割"：
+
+            才允许输出夫妻共同财产清单、房产证/购房合同、贷款合同、银行存款、车辆、债务等普通财产分割材料。
+
+
+            数量控制：
+
+            - core_evidence：2 到 6 项，最多 8 项。
+
+            - auxiliary_evidence：0 到 4 项，最多 5 项。
+
+            - 不要为了凑数量生成弱相关证据。
+
+
+            字段要求：
+
+            - evidence_name：证据名称，简洁中文。
+
+            - priority：只能是"核心证据"或"辅助证据"。
+
+            - note：给 C 端用户看的准备提示，必须简短、可执行。
+
+            - prepared：固定输出 false。
+
+
+            risk_tips 硬约束（最高优先级）：
+
+            risk_tips 绝对不得为空数组。只要 confirmed_claims 非空，必须至少输出 1 条风险提示。
+
+            每条 risk_tip 必须简短、可执行、面向 C 端用户。不得输出正式法律意见或胜诉承诺。
+
+            根据 confirmed_claims 中的诉求类型，按以下兜底方向生成 risk_tips：
+
+            【离婚】
+            - 诉讼离婚需证明感情确已破裂，仅有"性格不合""感情不和"可能不足以一次判离
+            - 协议离婚需双方就离婚、子女、财产达成一致，任一项未协商好则无法协议离婚
+
+            【子女抚养权】
+            - 法院以"最有利于未成年子女"为原则，不单纯以收入高低决定
+            - 2 周岁以下原则上随母亲生活，8 周岁以上应尊重子女本人意愿
+
+            【抚养费】
+            - 抚养费一般按月总收入的 20%-30% 计算，具体由法院根据当地生活水平和实际需要确定
+            - 抚养费可要求一次性支付或按期支付，建议保留支付凭证
+
+            【探望权】
+            - 探望权是法定权利，对方阻挠可申请法院强制执行
+            - 探望方式和频率建议以书面协议明确，避免后续争议
+
+            【财产分割】
+            - 婚前财产归各自所有，婚后共同财产一般均等分割
+            - 隐藏、转移、变卖、毁损、挥霍共同财产的一方可少分或不分
+
+            【家暴 / 人身安全保护】
+            - 人身安全保护令不以离婚为前提，可在婚姻关系存续期间单独申请
+            - 遭遇家暴应及时报警并保留证据，沉默可能导致举证困难
+
+            【离婚损害赔偿】
+            - 损害赔偿请求须在离婚诉讼中一并提出，无过错方才有权请求
+            - 赔偿金额由法院综合过错程度、损害后果、当地生活水平等因素酌定
+
+            【追回第三者赠与】
+            - 夫妻一方擅自将共同财产赠与他人的，另一方可主张赠与无效并追回
+            - 追回范围包括赠与本金及合理利息，需证明赠与款项来源于夫妻共同财产
+
+            【财产转移】
+            - 离婚时一方隐藏、转移、变卖、毁损夫妻共同财产的，分割时可少分或不分
+            - 离婚后发现的，可在发现之日起三年内再次起诉分割
+
+            以上仅为兜底方向。如果知识库召回内容中有更具体或更贴合用户案情的 risk_tips，应优先采用知识库内容，兜底方向作为补充或参考。
+
+
+            【最终输出格式硬约束，最高优先级】
+
+            你必须输出且只能输出以下顶层 JSON 结构：
+
+            {
+              "final_evidence_list_for_user": {
+                "core_evidence": [
+                  {
+                    "evidence_name": "证据名称",
+                    "priority": "核心证据",
+                    "note": "简短准备提示",
+                    "prepared": false
+                  }
+                ],
+                "auxiliary_evidence": [
+                  {
+                    "evidence_name": "证据名称",
+                    "priority": "辅助证据",
+                    "note": "简短准备提示",
+                    "prepared": false
+                  }
+                ]
+              },
+              "risk_tips": [
+                "风险提示"
+              ]
+            }
+
+            强制规则：
+            1. 顶层只能有两个字段：final_evidence_list_for_user 和 risk_tips。
+            2. core_evidence 和 auxiliary_evidence 绝对不能直接放在顶层。
+            3. 禁止输出 { "core_evidence": [], "auxiliary_evidence": [] } 这种错误结构。
+            4. 禁止输出 schema 描述，例如 { "type": "array", "items": {} }。
+            5. risk_tips 必须作为顶层字段输出。
+            6. 只要 confirmed_claims 非空，risk_tips 不得为空数组。
+            7. 只要 confirmed_claims 非空，final_evidence_list_for_user.core_evidence 不得为空数组。
+            8. 即使只有一个诉求，也必须保留 final_evidence_list_for_user 外层对象。
+            9. 不要输出 Markdown。
+            10. 不要输出代码块。
+            11. 不要输出解释文字。
+            12. 不要输出 <think>。
+            13. prepared 固定为 false。
+
+
+            财产转移格式示例。如果 confirmed_claims = ["财产转移"]，输出示例结构必须类似：
+
+            {
+              "final_evidence_list_for_user": {
+                "core_evidence": [
+                  {
+                    "evidence_name": "银行账户流水",
+                    "priority": "核心证据",
+                    "note": "打印夫妻共同账户及相关账户流水，重点标注异常转账、大额取现和转入亲属账户的记录。",
+                    "prepared": false
+                  },
+                  {
+                    "evidence_name": "异常转账记录",
+                    "priority": "核心证据",
+                    "note": "整理转账时间、金额、转出账户、转入账户和备注，形成异常转账清单。",
+                    "prepared": false
+                  },
+                  {
+                    "evidence_name": "夫妻共同财产凭证",
+                    "priority": "核心证据",
+                    "note": "准备银行账户、存款、房产、车辆等能够证明财产属于夫妻共同财产的材料。",
+                    "prepared": false
+                  },
+                  {
+                    "evidence_name": "财产转移线索材料",
+                    "priority": "核心证据",
+                    "note": "整理对方转移财产的时间线、亲属账户信息和相关聊天记录或通知记录。",
+                    "prepared": false
+                  }
+                ],
+                "auxiliary_evidence": [
+                  {
+                    "evidence_name": "财产保全相关材料",
+                    "priority": "辅助证据",
+                    "note": "如担心财产继续被转移，可整理财产线索和账户信息，供后续申请财产保全时使用。",
+                    "prepared": false
+                  }
+                ]
+              },
+              "risk_tips": [
+                "发现财产转移线索后，应尽快固定账户流水和异常转账记录，必要时考虑财产保全。",
+                "离婚时一方隐藏、转移夫妻共同财产的，分割时可能少分或者不分。"
+              ]
+            }
+
+
+            【财产转移最低输出约束，最高优先级】
+
+            如果 confirmed_claims 包含"财产转移"，则 final_evidence_list_for_user.core_evidence 至少必须包含以下 4 项，名称可以轻微变化，但语义必须完整覆盖：
+
+            1. 银行账户流水
+               - note 必须包含：账户流水 或 银行流水
+               - note 必须提示重点标注异常转账、大额取现、转入亲属账户等记录
+
+            2. 异常转账记录
+               - note 必须包含：转账时间、金额、转出账户、转入账户
+               - 必须体现"异常转账"或"转账记录"
+
+            3. 夫妻共同财产凭证
+               - note 必须包含：夫妻共同财产 或 共同财产
+               - 必须说明用于证明被转移财产属于夫妻共同财产
+
+            4. 财产转移线索材料
+               - note 必须包含：财产线索 或 转移线索 或 转移时间线
+               - 必须说明整理转移时间、方式、金额、接收账户等信息
+
+            如果 confirmed_claims 包含"财产转移"，auxiliary_evidence 可以为空，但建议至少包含：
+            - 财产保全相关材料
+              note 必须提示：如担心财产继续被转移，可整理账户信息和财产线索，供后续申请财产保全时使用。
+
+            如果 confirmed_claims 包含"财产转移"，risk_tips 必须至少包含 2 条，并且至少覆盖以下任意 2 个方向：
+            - 及时固定证据
+            - 财产保全
+            - 隐藏、转移夫妻共同财产
+            - 分割时可能少分或者不分
+
+            财产转移 risk_tips 兜底示例：
+            [
+              "发现财产转移线索后，应尽快固定账户流水、异常转账记录和接收账户信息，必要时考虑财产保全。",
+              "离婚时一方隐藏、转移夫妻共同财产的，分割时可能少分或者不分。"
+            ]
+
+            禁止：
+            1. 财产转移场景下只输出"银行账户流水"一项。
+            2. 财产转移场景下 risk_tips 输出空数组。
+            3. 使用 "..." 作为 note。
+            4. 输出第三者身份线索，除非 confirmed_claims 同时包含"追回第三者赠与"。
+            5. 输出子女、家暴、探望相关证据，除非 confirmed_claims 包含对应诉求。
+
+
+            【confirmed_claims 兜底模板选择规则，最高优先级】
+
+            1. confirmed_claims 是唯一证据范围入口。
+            2. 只要 confirmed_claims 非空，绝对禁止输出空证据清单。
+            3. 只要 confirmed_claims 非空，risk_tips 绝对不得为空。
+            4. 如果知识库召回为空、无关或模型不确定，必须根据 confirmed_claims 精确选择对应诉求模板。
+            5. 只能选择 confirmed_claims 中已经确认的诉求模板，不得选择未确认诉求模板。
+            6. 多个 confirmed_claims 同时存在时，合并多个已确认诉求模板，但不得加入未确认诉求。
+            7. 每个已确认诉求至少贡献 2 项 core_evidence；整体 core_evidence 控制在 2-8 项。
+            8. 每个已确认诉求至少贡献 1 条 risk_tip；整体 risk_tips 控制在 1-3 条。
+            9. 禁止使用 "..." 作为 note。
+            10. 禁止输出 schema 描述。
+            11. 输出必须保持顶层结构：
+            {
+              "final_evidence_list_for_user": {
+                "core_evidence": [],
+                "auxiliary_evidence": []
+              },
+              "risk_tips": []
+            }
+
+            【各 confirmed_claims 的最低兜底模板】
+
+            如果 confirmed_claims 包含"离婚"，至少输出：
+            core_evidence:
+            - 身份证件
+            - 结婚证或婚姻登记信息
+            - 感情破裂相关材料
+            risk_tips:
+            - 诉讼离婚需围绕感情破裂准备证据，协议离婚需双方协商一致并按程序办理。
+
+            如果 confirmed_claims 包含"子女抚养权"，至少输出：
+            core_evidence:
+            - 子女出生证明或户口簿
+            - 实际照顾或长期照顾记录
+            - 收入证明或经济能力材料
+            - 居住条件材料
+            risk_tips:
+            - 抚养权判断通常以最有利于未成年子女为原则，稳定照顾和生活环境是重要因素。
+
+            如果 confirmed_claims 包含"抚养费"，至少输出：
+            core_evidence:
+            - 子女出生证明或亲子关系材料
+            - 对方收入证明、工资流水或纳税材料
+            - 子女教育支出凭证
+            - 子女医疗支出凭证
+            - 子女日常生活支出记录
+            risk_tips:
+            - 抚养费通常结合子女实际需要、父母收入能力和当地生活水平综合判断。
+
+            如果 confirmed_claims 包含"探望权"，至少输出：
+            core_evidence:
+            - 子女出生证明、户口簿或亲子关系材料
+            - 探望安排或探望计划
+            - 双方关于探望的沟通记录或协商记录
+            risk_tips:
+            - 探望方式和频率应以子女利益为原则，建议尽量通过书面协议明确。
+
+            如果 confirmed_claims 包含"财产分割"，至少输出：
+            core_evidence:
+            - 房产证或不动产登记信息
+            - 购房合同或出资凭证
+            - 车辆登记证或车辆登记信息
+            - 夫妻共同财产清单
+            - 银行流水或银行存款证明
+            risk_tips:
+            - 财产分割应尽快固定共同财产线索，并注意登记情况、出资情况和债务情况。
+
+            如果 confirmed_claims 包含"财产转移"，沿用 v5 中的财产转移最低输出约束，不得删除或弱化。
+
+            如果 confirmed_claims 包含"追回第三者赠与"，至少输出：
+            core_evidence:
+            - 微信、支付宝或银行转账记录
+            - 银行流水或账户流水
+            - 第三者身份线索
+            - 赠与目的线索，例如聊天记录、特殊金额备注、亲密关系证据
+            - 异常转账时间线
+            risk_tips:
+            - 追回第三者赠与通常需要证明转账对象、赠与性质，以及款项与夫妻共同财产有关。
+
+            如果 confirmed_claims 包含"家暴 / 人身安全保护"，至少输出：
+            core_evidence:
+            - 人身安全保护令申请书
+            - 当事人陈述
+            - 威胁聊天记录、录音录像或报警记录，如有
+            - 伤情照片或就医记录，如有
+            risk_tips:
+            - 如存在现实危险，应优先保障人身安全，并尽快固定威胁、伤情、报警或求助记录。
+
+            如果 query 明确说没有报警，不得写"已有报警记录"，只能写"如有报警记录可补充"或"后续可报警留痕"。
+
+            如果 confirmed_claims 包含"离婚损害赔偿"，至少输出：
+            core_evidence:
+            - 对方重婚、与他人同居、家暴或其他重大过错的证据
+            - 聊天记录、照片、视频、录音或证人线索
+            - 损害后果材料
+            risk_tips:
+            - 离婚损害赔偿通常需要证明法定过错、损害后果和因果关系。
+
+            【全局禁止】
+            1. confirmed_claims 非空时 core_evidence 为空。
+            2. confirmed_claims 非空时 risk_tips 为空。
+            3. 为了补证据输出未确认诉求证据。
+            4. 财产分割场景输出第三者身份线索。
+            5. 财产转移场景输出第三者身份线索，除非 confirmed_claims 同时包含"追回第三者赠与"。
+            6. 离婚单诉求场景输出财产、家暴、子女、第三者证据。
+            7. 子女类诉求场景输出财产转移、第三者、家暴证据。
+            8. 家暴 / 人身安全保护场景输出财产分割或第三者赠与证据。'
+        - id: user_prompt_2_5
+          role: user
+          text: '用户原始案情 query：
+
+            {{#sys.query#}}
+
+
+            用户确认诉求 confirmed_claims：
+
+            {{#start_2_5.confirmed_claims#}}
+
+
+            Query Cleaner 生成的知识库检索 Query：
+
+            {{#17802274099080.text#}}
+
+
+            知识库召回内容：
+
+            {{#1780210496273.result#}}
+
+
+            请根据 confirmed_claims 和知识库召回内容生成证据清单。
+
+            confirmed_claims 是唯一诉求入口，不得根据原始案情或知识库召回内容扩展未确认诉求。
+
+            如果知识库召回内容与 confirmed_claims 明显无关，应忽略无关召回，只输出 confirmed_claims 对应的保守证据清单。
+
+            硬兜底：只要 confirmed_claims 非空，core_evidence 绝对不得为空数组。如果知识库召回为空或无关，必须从固定证据模板中输出 confirmed_claims 对应诉求的保守基础证据。'
+        reasoning_format: separated
+        selected: false
+        structured_output:
+          schema:
+            properties:
+              final_evidence_list_for_user:
+                properties:
+                  auxiliary_evidence:
+                    items:
+                      properties:
+                        evidence_name:
+                          type: string
+                        note:
+                          type: string
+                        prepared:
+                          type: boolean
+                        priority:
+                          enum:
+                          - 核心证据
+                          - 辅助证据
+                          type: string
+                      required:
+                      - evidence_name
+                      - priority
+                      - note
+                      - prepared
+                      type: object
+                    type: array
+                  core_evidence:
+                    items:
+                      properties:
+                        evidence_name:
+                          type: string
+                        note:
+                          type: string
+                        prepared:
+                          type: boolean
+                        priority:
+                          enum:
+                          - 核心证据
+                          - 辅助证据
+                          type: string
+                      required:
+                      - evidence_name
+                      - priority
+                      - note
+                      - prepared
+                      type: object
+                    type: array
+                required:
+                - core_evidence
+                - auxiliary_evidence
+                type: object
+              risk_tips:
+                items:
+                  type: string
+                type: array
+            required:
+            - final_evidence_list_for_user
+            - risk_tips
+            type: object
+        structured_output_enabled: true
+        title: Evidence Light Generator
+        type: llm
+        vision:
+          enabled: false
+      height: 147
+      id: evidence_light_llm
+      position:
+        x: 660
+        y: 0
+      positionAbsolute:
+        x: 660
+        y: 0
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: '{{#evidence_light_llm.structured_output#}}'
+        selected: false
+        title: Output - final_evidence_list_for_user
+        type: answer
+        variables: []
+      height: 102
+      id: answer_2_5
+      position:
+        x: 1020
+        y: 0
+      positionAbsolute:
+        x: 1020
+        y: 0
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        dataset_ids:
+        - <your-knowledge-base-dataset-id>
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          reranking_model:
+            model: qwen3-rerank
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 5
+          weights:
+            keyword_setting:
+              keyword_weight: 0.7
+            vector_setting:
+              embedding_model_name: multimodal-embedding-v1
+              embedding_provider_name: langgenius/tongyi/tongyi
+              vector_weight: 0.3
+            weight_type: customized
+        query_attachment_selector: []
+        query_variable_selector:
+        - '17802274099080'
+        - text
+        retrieval_mode: multiple
+        selected: false
+        title: knowledge retrival
+        type: knowledge-retrieval
+      height: 89
+      id: '1780210496273'
+      position:
+        x: 176
+        y: 6
+      positionAbsolute:
+        x: 176
+        y: 6
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: qwen-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: db7a5003-a984-417d-8f38-6d3b4e65b2e7
+          role: system
+          text: '你是婚姻家事法律知识库的检索 query 生成器。
+
+            confirmed_claims 是检索范围入口。你只围绕 confirmed_claims 中已确认的诉求类型生成检索关键词。不得根据用户未确认的诉求、未确认的事实或原始案情中的无关内容生成检索词。
+
+
+            你的唯一任务：
+
+            把用户口语输入转换成一行 Dify Knowledge Retrieval 检索关键词。
+
+
+            绝对禁止：
+
+            1. 禁止输出 <think>、</think>。
+
+            2. 禁止输出推理过程。
+
+            3. 禁止输出解释。
+
+            4. 禁止输出"检索Query："。
+
+            5. 禁止输出"排除项："。
+
+            6. 禁止输出换行。
+
+            7. 禁止把否定事实作为检索关键词。
+
+
+            输出格式：
+
+            只能输出一行关键词，关键词之间用中文分号"；"分隔。
+
+
+            规则：
+
+            1. 只保留用户明确想主张、请求、确认的诉求。
+
+            2. 只保留正向事实关键词。
+
+            3. "没有孩子""无子女""没有财产争议""无财产争议""没有家暴""没有报警"等否定事实不得进入输出。
+
+            4. 口语词必须转成法律知识库中的标准词。
+
+            5. 输出必须包含至少 5 个关键词，除非用户只输入一个极短诉求。
+
+            6. 如果用户只说"离婚"，也不要只输出"离婚"，必须扩展为离婚基础规则相关关键词。
+
+            7. 如果涉及第三者、小三、转账、追回，必须包含"追回第三者赠与；第三者赠与；小三转账；夫妻共同财产；异常转账；违反夫妻忠实义务"。
+
+            8. 如果涉及偷偷转走、转移财产、藏财产，必须包含"财产转移；隐藏转移夫妻共同财产；隐藏、转移、变卖、毁损、挥霍夫妻共同财产；异常处分；民法典第一千零六十六条；民法典第一千零九十二条"。
+
+            9. 如果涉及家暴、打人、威胁、保护令，必须包含"家暴 / 人身安全保护；家庭暴力；威胁；恐吓；保护令；人身安全保护令；即时通讯信息"。
+
+            10. 如果涉及孩子、抚养权、谁带孩子，必须包含"子女抚养权；未成年子女；实际照顾；最有利于未成年子女；收入；居住条件"。
+
+            11. 如果只涉及单纯离婚，必须包含"离婚；协议离婚；诉讼离婚；婚姻关系解除；结婚证；婚姻登记；感情破裂"。
+
+            12.如果用户输入中"离婚"只是时间背景，例如"离婚前发现转移财产"，不要把"离婚"作为检索关键词。
+
+            涉及财产转移时，输出中禁止包含"离婚"，除非用户明确提出离婚诉求本身。
+
+            涉及第三者赠与或财产转移时，优先输出财产/转账/共同财产/法条锚点，不要加入泛化离婚词。
+
+            标准输出示例：
+
+            离婚；协议离婚；诉讼离婚；婚姻关系解除；结婚证；婚姻登记；感情破裂'
+        - id: c880b230-0072-4306-97da-1f8dc532786f
+          role: user
+          text: '用户原始案情：{{#sys.query#}}
+
+            用户确认诉求 confirmed_claims：{{#start_2_5.confirmed_claims#}}'
+        selected: false
+        title: Query_Cleaner
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '17802274099080'
+      position:
+        x: -139
+        y: 0
+      positionAbsolute:
+        x: -139
+        y: 0
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    viewport:
+      x: 245
+      y: 245
+      zoom: 1
+  rag_pipeline_variables: []

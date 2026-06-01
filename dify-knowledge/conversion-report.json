@@ -1,0 +1,92 @@
+{
+  "excel_path": "C:\\Users\\13700\\Downloads\\婚姻家事_Dify知识库种子表.xlsx",
+  "sheet_infos": [
+    {
+      "sheet": "知识库条目",
+      "rows": 40,
+      "columns": [
+        "entry_id",
+        "来源类型",
+        "文件名称",
+        "条号/规则编号",
+        "主题",
+        "适用诉求",
+        "事实因子关键词",
+        "证据目的/证明任务",
+        "建议证据类型",
+        "Dify入库文本",
+        "标签",
+        "优先级(1高)",
+        "source_url",
+        "备注"
+      ]
+    },
+    {
+      "sheet": "来源索引",
+      "rows": 7,
+      "columns": [
+        "source_id",
+        "来源类型",
+        "文件名称",
+        "时间/效力",
+        "用途摘要",
+        "source_url"
+      ]
+    },
+    {
+      "sheet": "标签词表",
+      "rows": 12,
+      "columns": [
+        "标签",
+        "类型",
+        "说明"
+      ]
+    },
+    {
+      "sheet": "导入说明",
+      "rows": 7,
+      "columns": [
+        "项目",
+        "说明"
+      ]
+    },
+    {
+      "sheet": "总览",
+      "rows": 6,
+      "columns": [
+        "项目",
+        "数值/说明"
+      ]
+    }
+  ],
+  "main_sheet": "知识库条目",
+  "main_rows": 40,
+  "counts": {
+    "01_离婚基础规则.md": 4,
+    "02_子女抚养规则.md": 10,
+    "03_家暴与人身安全保护规则.md": 17,
+    "04_财产分割规则.md": 4,
+    "05_第三者赠与与财产转移规则.md": 5,
+    "06_证据规则总表.md": 40
+  },
+  "jsonl_total": 40,
+  "missing_files": [],
+  "jsonl_errors": [],
+  "blank_entries": [],
+  "empty_field_counts": {},
+  "duplicate_ids": [],
+  "main_duplicate_writes": [],
+  "sensitive_hits": [],
+  "law_expansion_markers": [],
+  "output_files": [
+    "D:\\Projects\\AI-Agent-2.5\\dify-knowledge\\01_离婚基础规则.md",
+    "D:\\Projects\\AI-Agent-2.5\\dify-knowledge\\02_子女抚养规则.md",
+    "D:\\Projects\\AI-Agent-2.5\\dify-knowledge\\03_家暴与人身安全保护规则.md",
+    "D:\\Projects\\AI-Agent-2.5\\dify-knowledge\\04_财产分割规则.md",
+    "D:\\Projects\\AI-Agent-2.5\\dify-knowledge\\05_第三者赠与与财产转移规则.md",
+    "D:\\Projects\\AI-Agent-2.5\\dify-knowledge\\06_证据规则总表.md",
+    "D:\\Projects\\AI-Agent-2.5\\dify-knowledge\\knowledge-index.jsonl",
+    "D:\\Projects\\AI-Agent-2.5\\dify-knowledge\\README.md"
+  ],
+  "quality_check_note": "未读取 .env；法条/规则内容仅来自 Excel 字段。README 中的“未新增法条”属于边界说明，不视为外扩内容。"
+}

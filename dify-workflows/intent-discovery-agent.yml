@@ -1,0 +1,281 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  icon_type: emoji
+  mode: advanced-chat
+  name: legal-claim-evidence-agent-intent-2-5-light-optimized-v2
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/deepseek:0.0.17
+    version: null
+kind: app
+version: 0.6.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 20
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: 1779172974842-source-17791730334260-target
+      source: '1779172974842'
+      sourceHandle: source
+      target: '17791730334260'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 17791730334260-source-17791730610570-target
+      source: '17791730334260'
+      sourceHandle: source
+      target: '17791730610570'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: 用户输入
+        type: start
+        variables: []
+      height: 72
+      id: '1779172974842'
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 识别用户可能涉及的法律诉求
+        isInIteration: false
+        isInLoop: false
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: deepseek-v4-pro
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: 05ca9130-ff28-487b-b879-c75aa64fce5a
+          role: system
+          text: |-
+            You are the lightweight intent suggestion module for Agent 2.5 in a Chinese family-law assistant.
+            Your job is narrow: read the user case description and quickly suggest possible claim candidates plus clear exclusions.
+            Dify/LLM only provides candidate suggestions. The frontend TypeScript claimGuard makes the final display decision.
+
+            Standard claim names (you MUST use exactly these 9 names):
+            1. 离婚
+            2. 子女抚养权
+            3. 抚养费
+            4. 探望权
+            5. 财产分割
+            6. 家暴 / 人身安全保护
+            7. 离婚损害赔偿
+            8. 追回第三者赠与
+            9. 财产转移
+
+            Trigger rules:
+            - 财产转移: when user mentions 偷偷转走 / 转移财产 / 隐匿财产 / 异常转账 / 财产不知去向 / 转走 → candidate_claims MUST include 财产转移
+            - 家暴 / 人身安全保护: when user mentions 家暴 / 打 / 威胁 / 恐吓 / 限制人身自由 / 殴打 → candidate_claims MUST include 家暴 / 人身安全保护
+            - 子女抚养权: when user mentions 抚养争议 / 孩子跟谁 / 一直由谁照顾 / 争取孩子 / 我要孩子 / 孩子抚养权 → candidate_claims MUST include 子女抚养权
+            - 探望权: when user mentions 对方不让看孩子 / 探望 / 探视 / 不让见孩子 → candidate_claims MUST include 探望权
+            - 抚养费: when user mentions 抚养费 / 对方不给钱 / 孩子生活费 / 教育费 / 医疗费纠纷 → candidate_claims MUST include 抚养费
+            - 离婚损害赔偿: when user mentions 家暴 / 出轨 / 婚外情 / 同居 / 重婚 AND wants divorce → candidate_claims MUST include 离婚损害赔偿
+            - 追回第三者赠与: when user mentions 转账 / 赠与 / 给钱 to a third party / 小三转钱 / 给小三 → candidate_claims MUST include 追回第三者赠与
+            - IMPORTANT: having minor children alone does NOT trigger 子女抚养权/抚养费/探望权. Only trigger when the user explicitly raises custody disputes, support issues, or visitation conflicts.
+
+            Conservative boundary:
+            - Do NOT auto-derive all ancillary claims just from "离婚" alone.
+            - If user only says "我想离婚" without mentioning children, property, violence, or transfer: ONLY suggest 离婚.
+            - If user mentions "出轨" but NOT property/children issues: suggest 离婚 + 离婚损害赔偿. Do NOT add 财产分割 or 子女抚养权.
+            - 追回第三者赠与 requires explicit mention of 转账 / 赠与 / 给钱 to a third party, NOT just 出轨.
+            - 财产转移 requires explicit mention of asset movement/disposal, NOT just 财产分割 or 共同财产.
+            - 财产分割 meaningfully requires mention of specific assets (房产/存款/车辆/债务), NOT just the word "离婚".
+            - Having children alone does NOT trigger 子女抚养权. Only trigger when user explicitly disputes custody/visitation/support.
+
+            Rules:
+            1. Do not run a complex Agent 3.0 fact-factor chain.
+            2. Do not output proof_path, facts_to_prove, evidence_candidates, legal_elements, matched_rules, factors, or claim_cards.
+            3. Do not write long explanations. Do not draft a complaint. Do not promise case outcomes.
+            4. Return claim_name values using the exact standard names listed above.
+            5. If the user clearly says there are no children (没有孩子 / 无子女 / 没有子女 / 未生育), put 子女抚养权 / 抚养费 / 探望权 into excluded_claims.
+            6. If the user clearly says there is no common property (没有共同财产 / 无共同财产 / 没有财产), keep 财产分割 as excluded_claims. If there is also third-party transfer or abnormal property disposal, you may suggest 追回第三者赠与 or 财产转移 instead.
+            7. If the user clearly says they want divorce (我想离婚 / 我要离婚 / 想离婚), candidate_claims must include 离婚.
+            8. confidence must be only high, medium, or low.
+            9. Output strict JSON only. No Markdown. No code fence. No extra text. No <think> tags.
+
+            Output exactly this shape:
+            {
+              "candidate_claims": [
+                {
+                  "claim_name": "string",
+                  "confidence": "high|medium|low",
+                  "reason": "string"
+                }
+              ],
+              "excluded_claims": [
+                {
+                  "claim_name": "string",
+                  "reason": "string"
+                }
+              ],
+              "missing_info": []
+            }
+        - id: 335700f1-189c-40e4-a75c-387e8541260e
+          role: user
+          text: '{{#sys.query#}}'
+        reasoning_format: separated
+        selected: false
+        structured_output:
+          schema:
+            properties:
+              candidate_claims:
+                items:
+                  properties:
+                    claim_name:
+                      type: string
+                    confidence:
+                      enum:
+                      - high
+                      - medium
+                      - low
+                      type: string
+                    reason:
+                      type: string
+                  required:
+                  - claim_name
+                  - confidence
+                  - reason
+                  type: object
+                type: array
+              excluded_claims:
+                items:
+                  properties:
+                    claim_name:
+                      type: string
+                    reason:
+                      type: string
+                  required:
+                  - claim_name
+                  - reason
+                  type: object
+                type: array
+              missing_info:
+                items:
+                  type: string
+                type: array
+            required:
+            - candidate_claims
+            - excluded_claims
+            - missing_info
+            type: object
+        structured_output_enabled: true
+        title: Intent Discovery 2.5 Light
+        type: llm
+        vision:
+          enabled: false
+      height: 115
+      id: '17791730334260'
+      position:
+        x: 477
+        y: 297
+      positionAbsolute:
+        x: 477
+        y: 297
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: '{{#17791730334260.structured_output#}}'
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: Possible_Claims
+        type: answer
+        variables: []
+      height: 102
+      id: '17791730610570'
+      position:
+        x: 800
+        y: 303
+      positionAbsolute:
+        x: 800
+        y: 303
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    viewport:
+      x: 92.57319183510072
+      y: -32.358945165360296
+      zoom: 0.8614881277752162
+  rag_pipeline_variables: []
