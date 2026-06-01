@@ -19,6 +19,27 @@ import { buildGuardedEvidenceResult } from "@/agent25/evidenceGuard"
 import { adaptDifyIntentResponse, adaptDifyEvidenceResponse } from "@/agent25/difyAdapter"
 import { buildLocalIntentFallback, buildLocalEvidenceFallback } from "@/agent25/localFallback"
 
+// ── 环境感知：开发走 Vite 代理，生产直连 Dify ──
+const isProd = import.meta.env.PROD
+const DIFY_BASE_URL = import.meta.env.VITE_DIFY_BASE_URL || "https://api.dify.ai/v1"
+const INTENT_API_KEY = import.meta.env.VITE_DIFY_INTENT_API_KEY
+const EVIDENCE_API_KEY = import.meta.env.VITE_DIFY_EVIDENCE_API_KEY
+
+const intentEndpoint = isProd ? `${DIFY_BASE_URL}/chat-messages` : "/api/intent"
+const evidenceEndpoint = isProd ? `${DIFY_BASE_URL}/chat-messages` : "/api/analysis"
+
+function parseDifyAnswer(answer: string): unknown {
+  let text = (answer || "").trim()
+  if (text.startsWith("```")) {
+    text = text.replace(/^```(?:json)?\s*\n?/, "").replace(/\n?```\s*$/, "")
+  }
+  try {
+    return JSON.parse(text)
+  } catch {
+    return { raw_text: answer }
+  }
+}
+
 // ── 可配置超时（毫秒），支持环境变量覆盖 ──
 const DIFY_INTENT_TIMEOUT_MS = Number(import.meta.env.VITE_DIFY_INTENT_TIMEOUT_MS) || 45_000
 const DIFY_EVIDENCE_TIMEOUT_MS = Number(import.meta.env.VITE_DIFY_EVIDENCE_TIMEOUT_MS) || 60_000
@@ -153,11 +174,20 @@ export function App() {
   }, [input])
 
   const callIntentApi = async (query: string) => {
-    const body = { query, user: "demo-user" }
+    const body = isProd
+      ? { inputs: {}, query, response_mode: "blocking", user: "demo-user" }
+      : { query, user: "demo-user" }
+    console.log("[callIntentApi] endpoint:", intentEndpoint, "isProd:", isProd)
     console.log("[callIntentApi] request body:", body)
-    const response = await fetchWithTimeout("/api/intent", {
+
+    const headers: Record<string, string> = { "Content-Type": "application/json" }
+    if (isProd) {
+      headers["Authorization"] = `Bearer ${INTENT_API_KEY}`
+    }
+
+    const response = await fetchWithTimeout(intentEndpoint, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify(body),
     }, DIFY_INTENT_TIMEOUT_MS)
     if (!response.ok) {
@@ -168,15 +198,41 @@ export function App() {
     const data = await response.json()
     console.log("[callIntentApi] raw response:", data)
     if (data.error) { throw new Error(data.error) }
+
+    // 生产环境：Dify 直接返回 { answer, conversation_id }，需解析 answer
+    if (isProd) {
+      const parsedAnswer = parseDifyAnswer(data.answer || "")
+      console.log("[callIntentApi] parsed answer keys:", Object.keys(parsedAnswer as object))
+      return parsedAnswer
+    }
+    // 开发环境：代理已解析好 result
     return data.result
   }
 
   const callAnalysisApi = async (query: string, confirmedClaims: string[]) => {
-    const body = { query, confirmed_claims: confirmedClaims, user: "demo-user" }
+    const isProd = import.meta.env.PROD
+
+    const body = isProd
+      ? (() => {
+          const inputs: Record<string, any> = { query }
+          if (Array.isArray(confirmedClaims) && confirmedClaims.length > 0) {
+            inputs.confirmed_claims = JSON.stringify(confirmedClaims)
+          }
+          return { inputs, query, response_mode: "blocking", user: "demo-user" }
+        })()
+      : { query, confirmed_claims: confirmedClaims, user: "demo-user" }
+
     console.log("[Analysis Request Body]", JSON.stringify(body, null, 2))
-    const response = await fetchWithTimeout("/api/analysis", {
+    console.log("[Analysis] endpoint:", evidenceEndpoint, "isProd:", isProd)
+
+    const headers: Record<string, string> = { "Content-Type": "application/json" }
+    if (isProd) {
+      headers["Authorization"] = `Bearer ${EVIDENCE_API_KEY}`
+    }
+
+    const response = await fetchWithTimeout(evidenceEndpoint, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify(body),
     }, DIFY_EVIDENCE_TIMEOUT_MS)
     console.log("[Analysis Response Status]", response.status, response.statusText)
@@ -191,6 +247,14 @@ export function App() {
       console.error("[Analysis Error] Dify returned error:", JSON.stringify(data.error, null, 2))
       throw new Error(data.error)
     }
+
+    // 生产环境：Dify 直接返回 { answer, conversation_id }，需解析 answer
+    if (isProd) {
+      const parsedAnswer = parseDifyAnswer(data.answer || "")
+      console.log("[Analysis] parsed answer keys:", Object.keys(parsedAnswer as object))
+      return parsedAnswer
+    }
+    // 开发环境：代理已解析好 result
     return data.result
   }
 
