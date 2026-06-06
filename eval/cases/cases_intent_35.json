@@ -1,0 +1,751 @@
+{
+  "version": "agent25_golden_intent_35",
+  "case_count": 35,
+  "cases": [
+    {
+      "case_id": "G001",
+      "case_type": "intent_and_evidence_single_claim",
+      "claim_types": [
+        "离婚"
+      ],
+      "query": "我想离婚。我们没有孩子，也没有共同财产争议。",
+      "confirmed_claims": [
+        "离婚"
+      ],
+      "expected_intent_claims": [
+        "离婚"
+      ],
+      "expected_excluded_claims": [
+        "子女抚养权",
+        "抚养费",
+        "探望权"
+      ],
+      "disallowed_high_confidence_intent_claims": [
+        "财产分割",
+        "财产转移",
+        "追回第三者赠与",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "单纯离婚。否定事实应排除子女类诉求，不得自动扩展财产或家暴证据。"
+    },
+    {
+      "case_id": "G002",
+      "case_type": "intent_and_evidence_single_claim",
+      "claim_types": [
+        "子女抚养权"
+      ],
+      "query": "我想离婚，有一个5岁的女儿，一直是我照顾，我想争取孩子抚养权。",
+      "confirmed_claims": [
+        "子女抚养权"
+      ],
+      "expected_intent_claims": [
+        "离婚",
+        "子女抚养权"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "追回第三者赠与",
+        "财产转移",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "子女抚养权中居住条件材料合理，房产证或租赁合同不能误判越界。"
+    },
+    {
+      "case_id": "G003",
+      "case_type": "intent_and_evidence_single_claim",
+      "claim_types": [
+        "抚养费"
+      ],
+      "query": "我们有一个孩子，离婚后我带孩子，要求对方支付抚养费。",
+      "confirmed_claims": [
+        "抚养费"
+      ],
+      "expected_intent_claims": [
+        "离婚",
+        "抚养费"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "追回第三者赠与",
+        "财产转移",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "抚养费核心是孩子身份、收入、必要支出。"
+    },
+    {
+      "case_id": "G004",
+      "case_type": "intent_and_evidence_single_claim",
+      "claim_types": [
+        "探望权"
+      ],
+      "query": "孩子以后跟对方生活，但我想确认离婚后每周能探望孩子。",
+      "confirmed_claims": [
+        "探望权"
+      ],
+      "expected_intent_claims": [
+        "探望权"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "追回第三者赠与",
+        "财产转移",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "探望权允许出现居住条件证明；不要把房产证误判为财产分割越界。"
+    },
+    {
+      "case_id": "G005",
+      "case_type": "intent_and_evidence_single_claim",
+      "claim_types": [
+        "财产分割"
+      ],
+      "query": "我想离婚，婚后买了一套房和一辆车，现在想分割夫妻共同财产。",
+      "confirmed_claims": [
+        "财产分割"
+      ],
+      "expected_intent_claims": [
+        "离婚",
+        "财产分割"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "子女抚养权",
+        "抚养费",
+        "探望权",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "普通财产分割，允许银行流水和财产清单，不应出现家暴/子女/第三者证据。"
+    },
+    {
+      "case_id": "G006",
+      "case_type": "intent_and_evidence_single_claim",
+      "claim_types": [
+        "财产转移"
+      ],
+      "query": "我准备离婚，发现他最近偷偷把夫妻账户里的钱挪走，还把存款转到亲戚名下。",
+      "confirmed_claims": [
+        "财产转移"
+      ],
+      "expected_intent_claims": [
+        "离婚",
+        "财产转移"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "子女抚养权",
+        "抚养费",
+        "探望权",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "财产转移不等于第三者赠与，不得默认输出第三者身份线索。"
+    },
+    {
+      "case_id": "G007",
+      "case_type": "intent_and_evidence_single_claim",
+      "claim_types": [
+        "追回第三者赠与"
+      ],
+      "query": "我发现我老公偷偷给小三转了很多钱，我想把这些钱追回来。",
+      "confirmed_claims": [
+        "追回第三者赠与"
+      ],
+      "expected_intent_claims": [
+        "追回第三者赠与",
+        "财产转移"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "子女抚养权",
+        "抚养费",
+        "探望权",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "第三者赠与必须锁定第三者身份和转账/赠与性质。"
+    },
+    {
+      "case_id": "G008",
+      "case_type": "intent_and_evidence_single_claim",
+      "claim_types": [
+        "家暴 / 人身安全保护"
+      ],
+      "query": "我老公经常打我，还威胁我，但我没有报警，我想申请保护令。",
+      "confirmed_claims": [
+        "家暴 / 人身安全保护"
+      ],
+      "expected_intent_claims": [
+        "家暴 / 人身安全保护"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "追回第三者赠与",
+        "财产转移",
+        "子女抚养权"
+      ],
+      "notes": "用户明确没有报警，不能暗示已有报警记录；可提示后续报警留痕。"
+    },
+    {
+      "case_id": "G009",
+      "case_type": "intent_and_evidence_single_claim",
+      "claim_types": [
+        "离婚损害赔偿"
+      ],
+      "query": "我想离婚，他长期和别人同居，我想要求离婚损害赔偿。",
+      "confirmed_claims": [
+        "离婚损害赔偿"
+      ],
+      "expected_intent_claims": [
+        "离婚",
+        "离婚损害赔偿"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "子女抚养权",
+        "抚养费",
+        "探望权",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "离婚损害赔偿围绕法定过错和损害后果。"
+    },
+    {
+      "case_id": "G010",
+      "case_type": "intent_and_evidence_single_claim",
+      "claim_types": [
+        "彩礼返还"
+      ],
+      "query": "我们没领结婚证，只办了酒席一起生活过半年，现在分开了，我想要回彩礼。",
+      "confirmed_claims": [
+        "彩礼返还"
+      ],
+      "expected_intent_claims": [
+        "彩礼返还"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "离婚",
+        "子女抚养权",
+        "财产分割",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "未登记不应生成离婚诉求；彩礼返还关注给付事实和共同生活情况。"
+    },
+    {
+      "case_id": "G020",
+      "case_type": "negative_fact",
+      "claim_types": [
+        "离婚"
+      ],
+      "query": "我想离婚，没有孩子，没有共同财产，也没有家暴。",
+      "confirmed_claims": [
+        "离婚"
+      ],
+      "expected_intent_claims": [
+        "离婚"
+      ],
+      "expected_excluded_claims": [
+        "子女抚养权",
+        "抚养费",
+        "探望权",
+        "家暴 / 人身安全保护"
+      ],
+      "disallowed_high_confidence_intent_claims": [
+        "财产分割",
+        "财产转移",
+        "追回第三者赠与"
+      ],
+      "notes": "多重否定事实测试。"
+    },
+    {
+      "case_id": "G021",
+      "case_type": "negative_fact",
+      "claim_types": [
+        "离婚"
+      ],
+      "query": "我们只是经常吵架，没有动手，也没有威胁，我想离婚。",
+      "confirmed_claims": [
+        "离婚"
+      ],
+      "expected_intent_claims": [
+        "离婚"
+      ],
+      "expected_excluded_claims": [
+        "家暴 / 人身安全保护"
+      ],
+      "disallowed_high_confidence_intent_claims": [
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "普通争吵不得升级为家暴保护令。"
+    },
+    {
+      "case_id": "G022",
+      "case_type": "negative_fact",
+      "claim_types": [
+        "离婚"
+      ],
+      "query": "我想离婚，虽然有个孩子，但孩子已经成年了，不涉及抚养权和抚养费。",
+      "confirmed_claims": [
+        "离婚"
+      ],
+      "expected_intent_claims": [
+        "离婚"
+      ],
+      "expected_excluded_claims": [
+        "子女抚养权",
+        "抚养费",
+        "探望权"
+      ],
+      "disallowed_high_confidence_intent_claims": [
+        "子女抚养权",
+        "抚养费",
+        "探望权"
+      ],
+      "notes": "成年子女不应触发未成年子女抚养权证据。"
+    },
+    {
+      "case_id": "G023",
+      "case_type": "negative_fact",
+      "claim_types": [
+        "财产分割"
+      ],
+      "query": "我想分割婚后买的房子，没有小三，也没有家暴。",
+      "confirmed_claims": [
+        "财产分割"
+      ],
+      "expected_intent_claims": [
+        "财产分割"
+      ],
+      "expected_excluded_claims": [
+        "追回第三者赠与",
+        "家暴 / 人身安全保护"
+      ],
+      "disallowed_high_confidence_intent_claims": [
+        "追回第三者赠与",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "否定小三和家暴，不应输出相关证据。"
+    },
+    {
+      "case_id": "G024",
+      "case_type": "colloquial",
+      "claim_types": [
+        "离婚"
+      ],
+      "query": "我真的不想跟他过了，想把这个婚断了。",
+      "confirmed_claims": [
+        "离婚"
+      ],
+      "expected_intent_claims": [
+        "离婚"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "子女抚养权",
+        "财产分割",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "口语“不过了/断了”应识别为离婚。"
+    },
+    {
+      "case_id": "G025",
+      "case_type": "colloquial",
+      "claim_types": [
+        "家暴 / 人身安全保护"
+      ],
+      "query": "他老是吼我，还说要弄死我，我害怕，想让法院别让他靠近我。",
+      "confirmed_claims": [
+        "家暴 / 人身安全保护"
+      ],
+      "expected_intent_claims": [
+        "家暴 / 人身安全保护"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "追回第三者赠与",
+        "财产转移"
+      ],
+      "notes": "口语式威胁表达应归入人身安全保护，不一定要求已有伤情。"
+    },
+    {
+      "case_id": "G026",
+      "case_type": "colloquial",
+      "claim_types": [
+        "财产转移"
+      ],
+      "query": "他把钱偷偷挪走了，我怀疑他在藏钱。",
+      "confirmed_claims": [
+        "财产转移"
+      ],
+      "expected_intent_claims": [
+        "财产转移"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "子女抚养权",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "“挪走/藏钱”应映射为财产转移。"
+    },
+    {
+      "case_id": "G027",
+      "case_type": "colloquial",
+      "claim_types": [
+        "子女抚养权"
+      ],
+      "query": "娃一直是我带的，他基本不管，我想娃以后跟我。",
+      "confirmed_claims": [
+        "子女抚养权"
+      ],
+      "expected_intent_claims": [
+        "子女抚养权"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "追回第三者赠与",
+        "财产转移",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "“娃”应识别为孩子。"
+    },
+    {
+      "case_id": "G028",
+      "case_type": "edge_weak_signal",
+      "claim_types": [
+        "离婚"
+      ],
+      "query": "他推了我一下，没有受伤，也没报警，我主要是想离婚。",
+      "confirmed_claims": [
+        "离婚"
+      ],
+      "expected_intent_claims": [
+        "离婚"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "轻微推搡且未确认保护令，不应强行生成家暴证据。"
+    },
+    {
+      "case_id": "G029",
+      "case_type": "edge_weak_signal",
+      "claim_types": [
+        "财产分割"
+      ],
+      "query": "我只知道家里有一些存款，但具体账户不清楚，想离婚时分一下。",
+      "confirmed_claims": [
+        "财产分割"
+      ],
+      "expected_intent_claims": [
+        "离婚",
+        "财产分割"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "财产转移",
+        "追回第三者赠与",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "账户不清楚不等于财产转移。"
+    },
+    {
+      "case_id": "G030",
+      "case_type": "edge_weak_signal",
+      "claim_types": [
+        "亲子关系确认/否认"
+      ],
+      "query": "孩子出生后我发现血型对不上，我想确认孩子到底是不是我的。",
+      "confirmed_claims": [
+        "亲子关系确认/否认"
+      ],
+      "expected_intent_claims": [
+        "亲子关系确认/否认"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "追回第三者赠与",
+        "财产转移",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "亲子关系确认/否认边界诉求，测试标准名和证据范围。"
+    },
+    {
+      "case_id": "I001",
+      "case_type": "intent_additional",
+      "claim_types": [
+        "离婚"
+      ],
+      "query": "我可能想离婚，但是还不确定。",
+      "confirmed_claims": [
+        "离婚"
+      ],
+      "expected_intent_claims": [
+        "离婚"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "子女抚养权",
+        "财产分割",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "补充边界/低频/意图模糊场景，用于 Intent 测试"
+    },
+    {
+      "case_id": "I002",
+      "case_type": "intent_additional",
+      "claim_types": [
+        "离婚"
+      ],
+      "query": "最近婚姻有问题，可能要离婚。",
+      "confirmed_claims": [
+        "离婚"
+      ],
+      "expected_intent_claims": [
+        "离婚"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "子女抚养权",
+        "财产分割",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "补充边界/低频/意图模糊场景，用于 Intent 测试"
+    },
+    {
+      "case_id": "I003",
+      "case_type": "intent_additional",
+      "claim_types": [
+        "离婚"
+      ],
+      "query": "我想离婚，我有个孩子。",
+      "confirmed_claims": [
+        "离婚"
+      ],
+      "expected_intent_claims": [
+        "离婚"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "子女抚养权",
+        "抚养费"
+      ],
+      "notes": "补充边界/低频/意图模糊场景，用于 Intent 测试"
+    },
+    {
+      "case_id": "I004",
+      "case_type": "intent_additional",
+      "claim_types": [
+        "离婚"
+      ],
+      "query": "我要离婚，有个孩子跟对方生活。",
+      "confirmed_claims": [
+        "离婚"
+      ],
+      "expected_intent_claims": [
+        "离婚"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "子女抚养权",
+        "抚养费"
+      ],
+      "notes": "补充边界/低频/意图模糊场景，用于 Intent 测试"
+    },
+    {
+      "case_id": "I005",
+      "case_type": "intent_additional",
+      "claim_types": [
+        "财产分割"
+      ],
+      "query": "我想分割婚后买的房子。",
+      "confirmed_claims": [
+        "财产分割"
+      ],
+      "expected_intent_claims": [
+        "财产分割"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "财产转移",
+        "追回第三者赠与"
+      ],
+      "notes": "补充边界/低频/意图模糊场景，用于 Intent 测试"
+    },
+    {
+      "case_id": "I006",
+      "case_type": "intent_additional",
+      "claim_types": [
+        "财产转移"
+      ],
+      "query": "我想离婚，他转走了部分存款。",
+      "confirmed_claims": [
+        "财产转移"
+      ],
+      "expected_intent_claims": [
+        "财产转移"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "财产分割",
+        "追回第三者赠与"
+      ],
+      "notes": "补充边界/低频/意图模糊场景，用于 Intent 测试"
+    },
+    {
+      "case_id": "I007",
+      "case_type": "intent_additional",
+      "claim_types": [
+        "追回第三者赠与"
+      ],
+      "query": "老公偷偷给小三转账，我想追回。",
+      "confirmed_claims": [
+        "追回第三者赠与"
+      ],
+      "expected_intent_claims": [
+        "追回第三者赠与"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "财产分割",
+        "财产转移"
+      ],
+      "notes": "补充边界/低频/意图模糊场景，用于 Intent 测试"
+    },
+    {
+      "case_id": "I008",
+      "case_type": "intent_additional",
+      "claim_types": [
+        "财产转移"
+      ],
+      "query": "他把钱转给朋友，不算小三。",
+      "confirmed_claims": [
+        "财产转移"
+      ],
+      "expected_intent_claims": [
+        "财产转移"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "追回第三者赠与",
+        "财产分割"
+      ],
+      "notes": "补充边界/低频/意图模糊场景，用于 Intent 测试"
+    },
+    {
+      "case_id": "I009",
+      "case_type": "intent_additional",
+      "claim_types": [
+        "家暴 / 人身安全保护"
+      ],
+      "query": "他打我，我想申请保护令。",
+      "confirmed_claims": [
+        "家暴 / 人身安全保护"
+      ],
+      "expected_intent_claims": [
+        "家暴 / 人身安全保护"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "追回第三者赠与",
+        "财产转移"
+      ],
+      "notes": "补充边界/低频/意图模糊场景，用于 Intent 测试"
+    },
+    {
+      "case_id": "I010",
+      "case_type": "intent_additional",
+      "claim_types": [
+        "离婚"
+      ],
+      "query": "他推了我一下，我主要想离婚。",
+      "confirmed_claims": [
+        "离婚"
+      ],
+      "expected_intent_claims": [
+        "离婚"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "补充边界/低频/意图模糊场景，用于 Intent 测试"
+    },
+    {
+      "case_id": "I011",
+      "case_type": "intent_additional",
+      "claim_types": [
+        "彩礼返还"
+      ],
+      "query": "我们没领结婚证，我想要回彩礼。",
+      "confirmed_claims": [
+        "彩礼返还"
+      ],
+      "expected_intent_claims": [
+        "彩礼返还"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "离婚",
+        "子女抚养权"
+      ],
+      "notes": "补充边界/低频/意图模糊场景，用于 Intent 测试"
+    },
+    {
+      "case_id": "I012",
+      "case_type": "intent_additional",
+      "claim_types": [
+        "彩礼返还"
+      ],
+      "query": "结婚半年分开，彩礼想退回。",
+      "confirmed_claims": [
+        "彩礼返还"
+      ],
+      "expected_intent_claims": [
+        "彩礼返还"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "离婚",
+        "子女抚养权"
+      ],
+      "notes": "补充边界/低频/意图模糊场景，用于 Intent 测试"
+    },
+    {
+      "case_id": "I013",
+      "case_type": "intent_additional",
+      "claim_types": [
+        "探望权"
+      ],
+      "query": "孩子以后跟对方生活，但我想确认每周探望。",
+      "confirmed_claims": [
+        "探望权"
+      ],
+      "expected_intent_claims": [
+        "探望权"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "子女抚养权"
+      ],
+      "notes": "补充边界/低频/意图模糊场景，用于 Intent 测试"
+    },
+    {
+      "case_id": "I014",
+      "case_type": "intent_additional",
+      "claim_types": [
+        "亲子关系确认/否认"
+      ],
+      "query": "孩子出生后我怀疑是不是我的。",
+      "confirmed_claims": [
+        "亲子关系确认/否认"
+      ],
+      "expected_intent_claims": [
+        "亲子关系确认/否认"
+      ],
+      "expected_excluded_claims": [],
+      "disallowed_high_confidence_intent_claims": [
+        "离婚",
+        "家暴 / 人身安全保护"
+      ],
+      "notes": "补充边界/低频/意图模糊场景，用于 Intent 测试"
+    }
+  ]
+}

@@ -908,7 +908,17 @@ test-results/
 
 ---
 
-## 九、免责声明
+## 十、免责声明
 
-本项目仅用于学习、作品集展示与法律信息整理辅助，不构成正式法律意见。  
+本项目仅用于学习、作品集展示与法律信息整理辅助，不构成正式法律意见。 
 实际案件应咨询专业律师或法律服务机构。
+
+---
+
+## Evaluation
+
+本项目构建了 Intent 35 条 Golden Cases 和 Evidence 30 条 Golden Cases，并已完成 Agent 2.0 / 2.5 / 3.0 的离线对比评估。
+
+当前评估已通过 GitHub Actions 固化为自动化回归测试：每次 push / pull request 会自动运行 Intent Eval、Evidence Eval 和 Agent 2.5 阈值门禁，防止代码、Prompt 或 Workflow 修改导致能力退化。
+
+详细说明见 [eval/README.md](eval/README.md)。

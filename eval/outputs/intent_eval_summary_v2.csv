@@ -1,0 +1,4 @@
+﻿agent_version,case_count,avg_core_recall,avg_precision,avg_robustness,avg_intent_score,avg_extra_claim_count,avg_high_conf_violation_count,core_recall_pass_rate,precision_pass_rate,robustness_pass_rate,overall_pass_rate
+2.0,35,1.0,0.6333,0.6929,0.7919,1.0,0.5714,1.0,0.3429,0.5714,0.3429
+2.5,35,1.0,0.8714,1.0,0.9486,0.2857,0.0,1.0,0.7429,1.0,0.7429
+3.0,35,1.0,0.8286,0.9286,0.9171,0.3714,0.0857,1.0,0.6571,0.9143,0.6571

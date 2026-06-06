@@ -1,0 +1,66 @@
+name: Eval Regression
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  eval:
+    name: Intent and Evidence Eval
+    runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Show Python version
+        run: python --version
+
+      - name: Prepare Eval Directories
+        run: |
+          mkdir -p eval/outputs
+          mkdir -p eval/charts
+
+      - name: Run Intent Eval
+        run: |
+          python eval/scripts/run_intent_eval_v2.py \
+            --cases eval/cases/cases_intent_35.json \
+            --config eval/scripts/eval_agents_config.intent.json \
+            --detail-csv eval/outputs/intent_eval_detail_v2.csv \
+            --summary-csv eval/outputs/intent_eval_summary_v2.csv \
+            --summary-md eval/outputs/intent_eval_report_v2.md
+
+      - name: Run Evidence Eval
+        run: |
+          python eval/scripts/run_evidence_eval.py \
+            --cases eval/cases/cases_evidence_30.json \
+            --config eval/scripts/eval_agents_config.evidence.json \
+            --detail-csv eval/outputs/evidence_eval_detail.csv \
+            --summary-csv eval/outputs/evidence_eval_summary.csv \
+            --summary-md eval/outputs/evidence_eval_report.md
+
+      - name: Generate Eval Charts
+        run: python eval/scripts/generate_eval_charts.py
+
+      - name: Check Eval Thresholds
+        run: python eval/scripts/check_eval_thresholds.py
+
+      - name: Upload Eval Outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-outputs
+          path: eval/outputs
+
+      - name: Upload Eval Charts
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-charts
+          path: eval/charts
+          if-no-files-found: warn

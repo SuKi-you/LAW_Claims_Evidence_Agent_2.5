@@ -1,0 +1,7 @@
+{
+  "agents": {
+    "2.0": ["python", "eval/scripts/agent20_adapter.py", "--mode", "evidence"],
+    "2.5": ["python", "eval/scripts/agent25_adapter.py", "--mode", "evidence"],
+    "3.0": ["python", "eval/scripts/agent30_adapter.py", "--mode", "evidence"]
+  }
+}
