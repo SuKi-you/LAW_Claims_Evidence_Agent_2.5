@@ -1,7 +1,7 @@
 // Vercel Serverless Function: Evidence proxy
 // 代理 /api/analysis → Dify Chatflow /chat-messages
 export const config = {
-  runtime: "nodejs20.x",
+  runtime: "nodejs",
   maxDuration: 60,
 };
 

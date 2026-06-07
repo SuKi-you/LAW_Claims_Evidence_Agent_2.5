@@ -1,7 +1,7 @@
 // Vercel Serverless Function: Intent Discovery proxy
 // 代理 /api/intent → Dify Chatflow /chat-messages
 export const config = {
-  runtime: "nodejs20.x",
+  runtime: "nodejs",
   maxDuration: 60,
 };
 
