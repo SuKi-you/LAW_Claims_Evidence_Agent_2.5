@@ -9,7 +9,7 @@ export function buildLocalIntentFallback(
 ): AdaptedIntentClaim[] {
   const claims: AdaptedIntentClaim[] = []
 
-  const hasExplicitDivorce = /(我想离婚|我要离婚|想离婚|准备离婚|起诉离婚|解除婚姻)/.test(sourceText)
+  const hasExplicitDivorce = /(我想离婚|我要离婚|想离婚|准备离婚|起诉离婚|解除婚姻|不想.*过了|过不下去|感情破裂|婚姻无法继续)/.test(sourceText)
   if (caseFacts.wantsDivorce || hasExplicitDivorce) {
     claims.push({
       claim_name: "离婚",

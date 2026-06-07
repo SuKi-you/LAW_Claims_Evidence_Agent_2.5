@@ -133,7 +133,7 @@ export const TOPIC_TO_EXCLUDED_CLAIMS: Record<string, string[]> = {
 export const DIVORCE_INTENT_PATTERNS = [
   /我想离婚/, /想离婚/, /我要离婚/, /我想离/, /想离/,
   /想分开/, /过不下去/, /感情不和/, /婚姻.*继续/,
-  /不想过了/, /不想继续/, /婚姻.*破裂/, /过不下去/,
+  /不想.*过了/, /不想继续/, /婚姻.*破裂/, /过不下去/,
   /分开/, /离婚/, /离了/,
 ]
 
