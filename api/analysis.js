@@ -31,7 +31,7 @@ export default async function handler(req, res) {
   }
 
   const apiKey = process.env.VITE_DIFY_EVIDENCE_API_KEY || process.env.DIFY_EVIDENCE_API_KEY;
-  const baseUrl = (process.env.VITE_DIFY_BASE_URL || process.env.DIFY_BASE_URL || "https://api.dify.ai/v1").replace(/\/+$/, "");
+  const baseUrl = (process.env.VITE_DIFY_BASE_URL || process.env.DIFY_API_BASE_URL || process.env.DIFY_BASE_URL || "https://api.dify.ai/v1").replace(/\/+$/, "");
 
   if (!apiKey) {
     return res.status(500).json({ error: "缺少 Evidence API Key" });
