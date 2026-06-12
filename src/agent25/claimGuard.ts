@@ -307,6 +307,22 @@ export function buildGuardedClaimCards(input: {
     })
   }
 
+  // 补充 L — 有子女且用户明确表达抚养权意愿但 Dify 未返回时兜底
+  const textChildCustody = /(孩子.*跟我|孩子.*归我|我要.*孩子|抚养权|跟我生活|和我生活|让孩子跟着我|争夺抚养权|争.*孩子)/.test(sourceText)
+  const hasChildCustodyClaim = guarded.some(
+    (c) => classifyClaimName(c.claim_name) === "child_custody"
+  )
+  if (caseFacts.hasChild === true && !caseFacts.hasNoChild && textChildCustody && !hasChildCustodyClaim) {
+    suppIndex++
+    guarded.push({
+      claim_id: `agent25-s${suppIndex}`,
+      claim_name: "子女抚养权",
+      level: "明确诉求",
+      confidence: "high",
+      display_reason: "用户明确表达希望孩子跟随自己生活，列为明确诉求。",
+    })
+  }
+
   // ── simpleDivorceOnly：仅表达离婚意愿，无其他具体事实 → 只保留离婚 ──
   const isSimpleDivorceOnly =
     caseFacts.wantsDivorce === true &&
