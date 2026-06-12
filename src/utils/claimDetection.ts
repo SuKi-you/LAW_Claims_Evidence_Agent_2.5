@@ -34,29 +34,28 @@ export function detectExcludedClaims(userInput: string): string[] {
           found.push(claim)
         }
       }
-      // 特殊处理：否定关键词后紧跟"孩子"/"子女"→ 排除子女抚养权、抚养费、探望权
-      // 需要距离检查，避免"不想让我的孩子受苦"这类保护性表达被误判为排除
-      const PROXIMITY_THRESHOLD = 5
+      // 特殊处理：否定关键词后紧跟"孩子"/"子女"→ 排除子女相关诉求
+      // 通过检测"的"字区分"不想要孩子"(无"的")和"不想让我的孩子受苦"(有"的"="我的孩子")
       const childMatch = after.match(/孩子|子女/)
-      if (childMatch !== null && childMatch.index !== undefined && childMatch.index <= PROXIMITY_THRESHOLD) {
+      if (childMatch !== null && childMatch.index !== undefined && !after.slice(0, childMatch.index).includes("的")) {
         const childClaims = ["子女抚养权", "孩子抚养权", "抚养权", "子女抚养费", "孩子抚养费", "抚养费", "探望权", "探视权"]
         for (const cc of childClaims) {
           if (!found.includes(cc)) {
             found.push(cc)
           }
         }
-        console.log("[detectExcludedClaims] child-related exclusion detected: keyword=", keyword, "after=", after, "proximity=", childMatch.index, "added:", childClaims.filter(c => !found.includes(c)))
+        console.log("[detectExcludedClaims] child-related exclusion detected: keyword=", keyword, "after=", after, "added:", childClaims.filter(c => !found.includes(c)))
       }
       // 特殊处理：否定关键词后紧跟"房子"/"房产"/"不动产"→ 排除财产分割、房产分割
       const houseMatch = after.match(/房子|房产|不动产|房屋/)
-      if (houseMatch !== null && houseMatch.index !== undefined && houseMatch.index <= PROXIMITY_THRESHOLD) {
+      if (houseMatch !== null && houseMatch.index !== undefined && !after.slice(0, houseMatch.index).includes("的")) {
         const houseClaims = ["财产分割", "夫妻共同财产分割", "房产分割"]
         for (const hc of houseClaims) {
           if (!found.includes(hc)) {
             found.push(hc)
           }
         }
-        console.log("[detectExcludedClaims] house-related exclusion detected: keyword=", keyword, "after=", after, "proximity=", houseMatch.index, "added:", houseClaims.filter(c => !found.includes(c)))
+        console.log("[detectExcludedClaims] house-related exclusion detected: keyword=", keyword, "after=", after, "added:", houseClaims.filter(c => !found.includes(c)))
       }
       searchFrom = idx + keyword.length
     }
